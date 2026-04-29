@@ -31,7 +31,14 @@ genai.configure(api_key=api_key)
  
 # Load model
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-3.1-flash-lite")
+
+# Example: set language from user input or default
+if "language" not in st.session_state:
+    st.session_state.language = "English"
+
+language = st.session_state.language
+
  
 # -----------------------
 
@@ -44,25 +51,73 @@ st.set_page_config(page_title="AI Salon Advisor", layout="centered")
 st.title("💇 AI Salon Business Advisor")
  
 # -----------------------
+# Language Selection
+# -----------------------
+language = st.selectbox(
+    "🌐 Select Language",
+    ["English", "Hindi", "Kannada", "Tamil", "Telugu", "Malayalam"]
+)
+
+ # -----------------------
+
+ # Welcome messages in multiple languages
+
+ # -----------------------
+ 
+welcome_messages = {
+    "English": "Hi 👋 I will help you start your salon business.\n\n💰 What is your budget?",
+    "Hindi": "नमस्ते 👋 मैं आपके सैलून बिज़नेस में मदद करूंगा।\n\n💰 आपका बजट क्या है?",
+    "Kannada": "ನಮಸ್ಕಾರ 👋 ನಿಮ್ಮ ಸಲೂನ್ ವ್ಯವಹಾರ ಆರಂಭಿಸಲು ನಾನು ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.\n\n💰 ನಿಮ್ಮ ಬಜೆಟ್ ಎಷ್ಟು?",
+    "Tamil": "வணக்கம் 👋 உங்கள் சலூன் தொழிலை தொடங்க நான் உதவுவேன்.\n\n💰 உங்கள் பட்ஜெட் என்ன?",
+    "Telugu": "హాయ్ 👋 మీ సలోన్ బిజినెస్ ప్రారంభించడానికి నేను సహాయం చేస్తాను.\n\n💰 మీ బడ్జెట్ ఎంత?",
+    "Malayalam": "ഹലോ 👋 നിങ്ങളുടെ സലൂൺ ബിസിനസ് തുടങ്ങാൻ ഞാൻ സഹായിക്കും.\n\n💰 നിങ്ങളുടെ ബജറ്റ് എത്ര?"
+}
+
+# -----------------------
 
 # Initialize chat
 
 # -----------------------
+if "last_language" not in st.session_state:
+    st.session_state.last_language = language
 
+# 4. Initialize messages
 if "messages" not in st.session_state:
-
     st.session_state.messages = [
-
         {
-
             "role": "assistant",
-
-            "content": "Hi 👋 I will help you start your salon business.\n\n💰 What is your budget?"
-
+            "content": welcome_messages[language]
         }
-
     ]
- 
+
+
+lang_map = {
+    "English": "English",
+    "Hindi": "Hindi",
+    "Kannada": "Kannada",
+    "Tamil": "Tamil",
+    "Telugu": "Telugu",
+    "Malayalam": "Malayalam"
+}
+
+selected_lang = lang_map[language]
+
+# -----------------------
+
+# Detect language change
+
+# -----------------------
+
+if st.session_state.last_language != language:
+    st.session_state.messages = [
+        {
+            "role": "assistant",
+            "content": welcome_messages[language]
+        }
+    ]
+    st.session_state.last_language = language
+    st.rerun()
+
 # -----------------------
 
 # Display chat
@@ -112,7 +167,14 @@ if user_input:
 You are a professional Salon Business Consultant.
  
 Talk like a friendly WhatsApp advisor.
- 
+
+IMPORTANT:
+-Reply ONLY in {selected_lang}
+- Do NOT mix languages
+- Keep sentences simple and local-friendly
+
+Understand user input in any language, but reply ONLY in {language}.
+
 Your job:
 
 Ask ONLY ONE question at a time to collect:
