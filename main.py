@@ -31,7 +31,7 @@ genai.configure(api_key=api_key)
  
 # Load model
 
-model = genai.GenerativeModel("gemini-3.1-flash-lite")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 # Example: set language from user input or default
 if "language" not in st.session_state:
